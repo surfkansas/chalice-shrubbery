@@ -2,11 +2,8 @@ import click
 import datetime
 import json
 import subprocess
-
-def apply_profile_to_aws_command(aws_command, profile):
-    if profile is not None:
-        aws_command.append('--profile')
-        aws_command.append(profile)
+import botocore.session
+import os
 
 def run_process(label, command):
     print(label)
@@ -16,22 +13,80 @@ def run_process(label, command):
     output = subprocess.check_output(command, shell=False)
     print(output.decode())
 
-def get_config(stage, config_name):
+def get_config_json():
     with open('.chalice/config.json') as json_file:
-        config = json.load(json_file)
-        return config['stages'][stage]['shrubbery.' + config_name]
+        return json.load(json_file)
+
+def get_s3_bucket_name(stage, profile):
+
+    config = get_config_json()
+
+    if 'stages' in config:
+        if stage in config['stages']:
+            stage_config = config['stages'][stage]
+            if 'shrubbery.s3_bucket' in stage_config:
+                return stage_config['shrubbery.s3_bucket']
+
+    if 'shrubbery.s3_bucket' in config:
+        return config['shrubbery.s3_bucket']
+
+    session = botocore.session.get_session()
+    client = session.create_client('sts')
+
+    account_id = client.get_caller_identity()['Account']
+    s3_bucket = 'chalice-shrubbery-' + account_id
+
+    return s3_bucket
+
+def get_stack_name(stage):
+
+    config = get_config_json()
+
+    if 'stages' in config:
+        if stage in config['stages']:
+            stage_config = config['stages'][stage]
+            if 'shrubbery.stack_name' in stage_config:
+                return stage_config['shrubbery.stack_name']
+
+    if 'shrubbery.stack_name' in config:
+        return config['shrubbery.stack_name']
+
+    return config['app_name']
 
 @click.group()
 def cli():
     pass
 
+def apply_transformations(chalice_template_file, stack_name):
+    with open(chalice_template_file) as json_file:
+        template_json = json.load(json_file)
+
+    if 'Outputs' in template_json:
+        for output in template_json['Outputs']:
+            output_config = template_json['Outputs'][output]
+            output_config['Export'] = {
+                'Name': stack_name + ':' + output
+            }
+    
+    if 'Resources' in template_json:
+        for resource in template_json['Resources']:
+            resource_config = template_json['Resources'][resource]
+            if resource_config['Type'] == 'AWS::Serverless::Function':
+                resource_config['Name'] = stack_name + '-' + resource
+
+    with open(chalice_template_file, 'w') as outfile:
+        json.dump(template_json, outfile)
+
 @click.command(help='Deploy a Chalice project to AWS using CloudFormation')
-@click.option('--stage', required=True, help='Specify the Chalice stage to operate upon')
+@click.option('--stage', required=True, default='dev', help='Specify the Chalice stage to operate upon')
 @click.option('--profile', help='Provide the name of an AWS CLI profile to use for operations')
 def deploy(stage, profile):
 
-    s3_bucket_name = get_config(stage, 's3_bucket')
-    stack_name = get_config(stage, 'stack_name')
+    if profile is not None:
+        os.environ['AWS_PROFILE'] = profile
+
+    s3_bucket_name = get_s3_bucket_name(stage, profile)
+    stack_name = get_stack_name(stage)
 
     chalice_package_output_folder = '.chalice/deployments/shrubbery/{0}'.format(stage)
     chalice_template_file = '{0}/sam.json'.format(chalice_package_output_folder)
@@ -46,6 +101,8 @@ def deploy(stage, profile):
     ]
     run_process('Using chalice to create deployment package template...', chalice_command)
 
+    apply_transformations(chalice_template_file, stack_name)
+
     aws_package_command = [
         'aws', 'cloudformation', 'package', 
         '--template-file', chalice_template_file,
@@ -53,7 +110,6 @@ def deploy(stage, profile):
         '--s3-prefix', s3_prefix,
         '--output-template-file', packaged_template_file 
     ]
-    apply_profile_to_aws_command(aws_package_command, profile)
     run_process('Running cloud formation package on deployment template...', aws_package_command)
 
     aws_s3_command = [
@@ -61,7 +117,6 @@ def deploy(stage, profile):
         packaged_template_file,
         s3_template_file
     ]
-    apply_profile_to_aws_command(aws_s3_command, profile)
     run_process('Uploading cloud formation package to S3...', aws_s3_command)
 
     aws_deploy_command = [
@@ -70,35 +125,38 @@ def deploy(stage, profile):
         '--stack-name', stack_name,
         '--capabilities', 'CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM'
     ]
-    apply_profile_to_aws_command(aws_deploy_command, profile)
     run_process('Deploying cloud formation change set...', aws_deploy_command)
  
 @click.command(help='Delete a deployed Chalice project CloudFormation stack')
-@click.option('--stage', required=True, help='Specify the Chalice stage to operate upon')
+@click.option('--stage', required=True, default='dev', help='Specify the Chalice stage to operate upon')
 @click.option('--profile', help='Provide the name of an AWS CLI profile to use for operations')
 def delete(stage, profile):
 
-    stack_name = get_config(stage, 'stack_name')
+    if profile is not None:
+        os.environ['AWS_PROFILE'] = profile
+
+    stack_name = get_stack_name(stage)
 
     aws_delete_command = [
         'aws', 'cloudformation', 'delete-stack', 
         '--stack-name', stack_name
     ]
-    apply_profile_to_aws_command(aws_delete_command, profile)
     run_process('Deleting cloud formation stack...', aws_delete_command)
 
 @click.command(help='Describe an existing Chalice project CloudFormation stack')
-@click.option('--stage', required=True, help='Specify the Chalice stage to operate upon')
+@click.option('--stage', required=True, default='dev', help='Specify the Chalice stage to operate upon')
 @click.option('--profile', help='Provide the name of an AWS CLI profile to use for operations')
 def describe(stage, profile):
 
-    stack_name = get_config(stage, 'stack_name')
+    if profile is not None:
+        os.environ['AWS_PROFILE'] = profile
+
+    stack_name = get_stack_name(stage)
 
     aws_describe_command = [
         'aws', 'cloudformation', 'describe-stacks', 
         '--stack-name', stack_name
     ]
-    apply_profile_to_aws_command(aws_describe_command, profile)
     subprocess.run(aws_describe_command)
 
 cli.add_command(deploy)

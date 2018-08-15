@@ -41,11 +41,17 @@ An example of that config is listed here:
 }
 ```
 
-Unlike most Chalice configuration, these entires *must* be specified in the stage configuration.
+These entries can be at the stage level or the top-level config.
+
+## Config Defaults
+
+If the `shrubbery.s3_bucket` config is not supplied, Chalice Shrubbery will assume a bucket of `chalice-shrubbery-{accountid}`.  You should either configure the bucket, or create the S3 bucket.
+
+If the `shrubbery.stack_name` config is not supplied, Chalice Shrubbery will assume the `app_name` for the stack name.
 
 ## Usage
 
-To deploy using Chalice Shrubbery, you call the command line specifying the stage you want to deploy.  Note that Chalice Shrubbery uses the same conventions as Chalice for AWS Authentication, but that the `--stage` parameter will *not* default to `dev`.
+To deploy using Chalice Shrubbery, you call the command line specifying the stage you want to deploy.  Note that Chalice Shrubbery uses the same conventions as Chalice for AWS Authentication.  If a stage is not specified, `dev` will be used as a default.
 
 A sample deployment would be:
 
@@ -76,6 +82,14 @@ chalice-shrubbery describe --stage dev
 The name Chalice Shrubbery came from *Monty Python and the Holy Grail*, as a task given out by the Knights Who Say Ni.
 
 ## Version History
+
+* 0.10.108 - 2018-08-15 - (Lancelot)
+  * Added post-export transformations to SAM file
+  * Added names to Lambda functions
+  * Added export names to output
+  * Default S3 bucket to chalice-shrubbery-{accountid} if not specified in config
+  * Default stack name to dev if not specified in config
+  * Config can now be applied at project level
 
 * 0.9.108 - 2018-07-27 - (Sir Robin)
   * Initial release
