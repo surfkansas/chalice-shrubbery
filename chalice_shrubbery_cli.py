@@ -73,8 +73,7 @@ def apply_transformations(chalice_template_file, stack_name):
             resource_config = template_json['Resources'][resource]
             if resource_config['Type'] == 'AWS::Serverless::Function':
                 resource_config['Properties']['FunctionName'] = stack_name + '-' + resource
-
-    with open(chalice_template_file, 'w') as outfile:
+     with open(chalice_template_file, 'w') as outfile:
         json.dump(template_json, outfile)
 
 @click.command(help='Deploy a Chalice project to AWS using CloudFormation')
