@@ -72,7 +72,7 @@ def apply_transformations(chalice_template_file, stack_name):
         for resource in template_json['Resources']:
             resource_config = template_json['Resources'][resource]
             if resource_config['Type'] == 'AWS::Serverless::Function':
-                resource_config['Name'] = stack_name + '-' + resource
+                resource_config['Properties']['FunctionName'] = stack_name + '-' + resource
 
     with open(chalice_template_file, 'w') as outfile:
         json.dump(template_json, outfile)
