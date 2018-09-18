@@ -9,9 +9,9 @@ setup(
         'click'
     ],
   description = 'chalice-shrubbery is a command line tool simplying cloud formation deployments with aws chalice',
-  version = '0.10.108.1',
+  version = '0.11.108',
   author = 'Mark Sweat',
   author_email = 'mark@surfkansas.com',
   url = 'https://github.com/surfkansas/chalice-shrubbery', 
-  download_url = 'https://github.com/surfkansas/chalice-shrubbery/archive/0.10.108.1.tar.gz'
+  download_url = 'https://github.com/surfkansas/chalice-shrubbery/archive/0.11.108.tar.gz'
 )
