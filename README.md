@@ -83,6 +83,9 @@ The name Chalice Shrubbery came from *Monty Python and the Holy Grail*, as a tas
 
 ## Version History
 
+* 0.12.108 - 2018-10-23 - (Excalibur)
+  * Added '--s3-file' arg to aws cloudformation deploy command
+
 * 0.11.108 - 2018-09-18 - (Arthur, King of the Britons)
   * Added support for `validation` section in config to support API gateway request validators
 

@@ -135,7 +135,8 @@ def deploy(stage, profile):
         'aws', 'cloudformation', 'deploy', 
         '--template-file', packaged_template_file,
         '--stack-name', stack_name,
-        '--capabilities', 'CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM'
+        '--capabilities', 'CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM',
+        '--s3-bucket', s3_bucket_name
     ]
     run_process('Deploying cloud formation change set...', aws_deploy_command)
  
