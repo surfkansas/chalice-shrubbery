@@ -83,6 +83,9 @@ The name Chalice Shrubbery came from *Monty Python and the Holy Grail*, as a tas
 
 ## Version History
 
+* 0.13.108 - 2019-12-17 (Castle Aaargh)
+  * Switched to use JSON as the output format for Cloud Formation transformations to resolve an issue inherent in YAML format.
+
 * 0.12.108 - 2018-10-23 - (Excalibur)
   * Added '--s3-file' arg to aws cloudformation deploy command
 

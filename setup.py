@@ -9,7 +9,7 @@ setup(
         'click'
     ],
   description = 'chalice-shrubbery is a command line tool simplying cloud formation deployments with aws chalice',
-  version = '0.12.108',
+  version = '0.13.108',
   author = 'Mark Sweat',
   author_email = 'mark@surfkansas.com',
   url = 'https://github.com/surfkansas/chalice-shrubbery', 
