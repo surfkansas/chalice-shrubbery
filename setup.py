@@ -13,5 +13,5 @@ setup(
   author = 'Mark Sweat',
   author_email = 'mark@surfkansas.com',
   url = 'https://github.com/surfkansas/chalice-shrubbery', 
-  download_url = 'https://github.com/surfkansas/chalice-shrubbery/archive/0.12.108.tar.gz'
+  download_url = 'https://github.com/surfkansas/chalice-shrubbery/archive/0.13.108.tar.gz'
 )
