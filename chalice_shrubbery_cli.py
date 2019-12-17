@@ -102,9 +102,9 @@ def deploy(stage, profile):
 
     chalice_package_output_folder = '.chalice/deployments/shrubbery/{0}'.format(stage)
     chalice_template_file = '{0}/sam.json'.format(chalice_package_output_folder)
-    packaged_template_file = '{0}/packaged.yml'.format(chalice_package_output_folder)
+    packaged_template_file = '{0}/packaged.json'.format(chalice_package_output_folder)
     s3_prefix = 'chalice-shrubbery/{0}/{1}/{2}'.format(stack_name, stage, datetime.datetime.now().isoformat())
-    s3_template_file = 's3://{0}/{1}/packaged.yml'.format(s3_bucket_name, s3_prefix)
+    s3_template_file = 's3://{0}/{1}/packaged.json'.format(s3_bucket_name, s3_prefix)
 
     chalice_command = [
         'chalice', 'package',
@@ -120,7 +120,8 @@ def deploy(stage, profile):
         '--template-file', chalice_template_file,
         '--s3-bucket', s3_bucket_name,
         '--s3-prefix', s3_prefix,
-        '--output-template-file', packaged_template_file 
+        '--output-template-file', packaged_template_file,
+        '--use-json'
     ]
     run_process('Running cloud formation package on deployment template...', aws_package_command)
 
