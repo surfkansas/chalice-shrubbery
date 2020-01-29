@@ -83,6 +83,9 @@ The name Chalice Shrubbery came from *Monty Python and the Holy Grail*, as a tas
 
 ## Version History
 
+* 0.14.108 - 2020-01-29 (Sir Bedevere)
+  * Added support for `--merge-template` command arg
+
 * 0.13.108 - 2019-12-17 (Castle Aaargh)
   * Switched to use JSON as the output format for Cloud Formation transformations to resolve an issue inherent in YAML format.
 
