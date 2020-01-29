@@ -92,7 +92,8 @@ def apply_transformations(chalice_template_file, stack_name):
 @click.command(help='Deploy a Chalice project to AWS using CloudFormation')
 @click.option('--stage', required=True, default='dev', help='Specify the Chalice stage to operate upon')
 @click.option('--profile', help='Provide the name of an AWS CLI profile to use for operations')
-def deploy(stage, profile):
+@click.option('--merge-template', default=None, help='Specify a JSON template to be merged into the generated template. This is useful for adding resources to a Chalice template or modify values in the template. CloudFormation Only.')
+def deploy(stage, profile, merge_template):
 
     if profile is not None:
         os.environ['AWS_PROFILE'] = profile
@@ -111,6 +112,15 @@ def deploy(stage, profile):
         '--stage', stage,
         chalice_package_output_folder
     ]
+
+    if merge_template:
+        chalice_command = [
+            'chalice', 'package',
+            '--stage', stage,
+            '--merge-template', merge_template,
+            chalice_package_output_folder
+        ]
+
     run_process('Using chalice to create deployment package template...', chalice_command)
 
     apply_transformations(chalice_template_file, stack_name)

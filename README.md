@@ -1,6 +1,6 @@
 # chalice-shrubbery
 
-Chalic Shrubbery is a helper tool for automating AWS Chalice deployments using Cloud Formation.  Its purpose is to provide single-tool support for deploying Chalice microservices using AWS Cloud Formation (as opposed to using Chalice's built-it deploy function).
+Chalice Shrubbery is a helper tool for automating AWS Chalice deployments using Cloud Formation.  Its purpose is to provide single-tool support for deploying Chalice microservices using AWS Cloud Formation (as opposed to using Chalice's built-in deploy function).
 
 ## Installation
 
@@ -10,7 +10,7 @@ To install Chalice Shrubbery, use pip...
 pip install chalice-shrubbery
 ```
 
-Chalice Shrubbery requres both Chalice and the AWS CLI to be installed in the environment where it is used.  These are intentionally omitted from the requirements of this package.
+Chalice Shrubbery requires both Chalice and the AWS CLI to be installed in the environment where it is used.  These are intentionally omitted from the requirements of this package.
 
 Guidelines for getting started with Chalice are available here:
 
